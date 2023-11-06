@@ -1,18 +1,46 @@
 {
-	"variables": {
-		"client_id": "{{env `ARM_CLIENT_ID`}}",
-		"client_secret": "{{env `ARM_CLIENT_SECRET`}}",
-		"subscription_id": "{{env `ARM_SUBSCRIPTION_ID`}}"
-	},
-	"builders": [{
-		**YOUR CODE HERE**
-	}],
-	"provisioners": [{
-		"inline": [
-			"echo 'Hello, World!' > index.html",
-			"nohup busybox httpd -f -p 80 &"
-		],
-		"inline_shebang": "/bin/sh -x",
-		"type": "shell"
-	}]
+  "variables": {
+    "client_id": "bf4be572-fd6b-4712-b50f-1a0dcfcbaecc",
+    "client_secret": "5dR8Q~hTrzm~zQOd0Yuv5gxQ~iDfSnCL43XlIcle",
+    "tenant_id": "1e4f919f-54f3-4e8d-ad4f-7b6c7bbd8389",
+    "subscription_id": "8dcdd40b-96b3-4cb1-8a5a-768e469afebe"
+  },
+  "builders": [
+    {
+      "type": "azure-arm",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "tenant_id": "{{user `tenant_id`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+
+      "managed_image_resource_group_name": "az-devops-rg",
+      "managed_image_name": "my-packer-image",
+
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "18.04-LTS",
+
+      "azure_tags": {
+        "imageTag": "Packer Image"
+      },
+      "location": "East US",
+      "vm_size": "Standard_B1s"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+      "inline": [
+        "apt-get update",
+        "apt-get upgrade -y",
+        "apt-get -y install nginx",
+        "echo 'Hello, World!' > index.html",
+        "nohup busybox httpd -f -p 80 &",
+        "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+      ],
+      "inline_shebang": "/bin/sh -x",
+      "type": "shell"
+    }
+  ]
 }

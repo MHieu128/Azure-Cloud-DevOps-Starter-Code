@@ -1,0 +1,10 @@
+{
+  "tagName": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Tag name",
+      "description": "Tag name that can be specified when deploying resources"
+    },
+    "defaultValue": "tags01"
+  }
+}
